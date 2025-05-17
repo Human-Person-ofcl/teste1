@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local whitelist = {
-	[7305288881] = true,
-	[4785279399] = true,  
+    [7305288881] = true,
+    [4785279399] = true,
 }
 
 local player = game.Players.LocalPlayer
