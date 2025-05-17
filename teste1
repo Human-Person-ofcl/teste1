@@ -6,7 +6,7 @@ local whitelist = {
 
 local player = game.Players.LocalPlayer
 if not whitelist[player.UserId] then
-	player:Kick("tu nao ta na whitelist manin não tente excutar")
+	player:Kick("Você Não comprou a Permissão.")
 	return
 end
 
@@ -466,7 +466,7 @@ Tab:CreateButton({
 })
 
 local Tab = Window:CreateTab("PLAYERS", 13289762774)
-local Button = Tab:CreateButton({ Name = "Fly ✈️", Callback = function() 
+local Button = Tab:CreateButton({ Name = "Fly ✈️,NãoUsarPodedarBan", Callback = function() 
 	print("Fly ativado!")
 	local main = Instance.new("ScreenGui")
 	local Frame = Instance.new("Frame")
@@ -943,7 +943,7 @@ local Button = Tab:CreateButton({ Name = "Fly ✈️", Callback = function()
 		closebutton.Position =  UDim2.new(0, 0, -1, 27)
 	end)
 end })
-local Button = Tab:CreateButton({ Name = "Noclip 🚪", Callback = function() 
+local Button = Tab:CreateButton({ Name = "Noclip 🚪Podeusar", Callback = function() 
 	print("Noclip ativado!")
 	local Noclip = nil
 	local Clip = nil
@@ -973,7 +973,7 @@ end })
 local noFallEnabled = false
 
 local Button = Tab:CreateButton({
-	Name = "No Fall 💖",
+	Name = "No Fall 💖PodeUsar",
 	Callback = function()
 		noFallEnabled = not noFallEnabled -- Alterna entre ativado e desativado
 
@@ -1011,7 +1011,7 @@ game.DescendantAdded:Connect(function(obj)
 		end
 	end
 end)
-local rev = Window:CreateTab("Auto-Roubar 🏴‍☠️")
+local rev = Window:CreateTab("Auto-Roubar 🏴‍☠️PodeUsar")
 local Section = rev:CreateSection("NECESSARIO")
 local Button = rev:CreateButton({
 	Name = "puxa itens",
@@ -1141,7 +1141,7 @@ local mob = rev:CreateButton({
 		RevistarButton.Parent = Frame
 	end,
 })
-local otoTab = Window:CreateTab("anti staff 👾")
+local otoTab = Window:CreateTab("anti staff 👾Pode Usar")
 local Toggle = otoTab:CreateToggle({
 	Name = "anti staff V2",
 	CurrentValue = false,
@@ -1401,7 +1401,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	end
 end)
 local Tab = Window:CreateTab("Carros", 12338080417)
-local Button = Tab:CreateButton({ Name = "Destrancar Carro 🔑", Callback = function() 
+local Button = Tab:CreateButton({ Name = "Destrancar Carro 🔑NÃO USAR", Callback = function() 
 	print("By Rodrigues Menu")
 	-- Gui to Lua
 	-- Version: 3.2
@@ -1534,10 +1534,10 @@ local Button = Tab:CreateButton({ Name = "Destrancar Carro 🔑", Callback = fun
 	end
 	coroutine.wrap(NDWS_fake_script)()
 end })
-local Button = Tab:CreateButton({ Name = "Deletar Carros ❌", Callback = function() 
+local Button = Tab:CreateButton({ Name = "Deletar Carros ❌NÃO USAR", Callback = function() 
 	print("Todos os carros deletados!")
 end })
-local Button = Tab:CreateButton({ Name = "Mudar Cor Visual 🔥", Callback = function() 
+local Button = Tab:CreateButton({ Name = "Mudar Cor Visual 🔥NÃO USAR", Callback = function() 
 	print("Turbo infinito ativado!")
 end })
 local TeleportTab = Window:CreateTab("Teleports 🕳️")
@@ -1572,13 +1572,13 @@ addTeleportButton("Teleport Ilegal", CFrame.new(12037.2705, 27.5305443, 12794.06
 addTeleportButton("Teleport predio 1", CFrame.new(-1595.23328, 204.074341, 555.895386, 0.939687431, -0.34203434, 1.81794167e-06, 1.81794167e-06, 1.02519989e-05, 1, -0.34203434, -0.93968749, 1.02519989e-05))
 addTeleportButton("Teleport Devs Mini City", CFrame.new(2555.44263, 303.167755, -1004.13763, -0.422592998, 0, 0.906319618, 0, 1, 0, -0.906319618, 0, -0.422592998))
 local Tab = Window:CreateTab("CONFIGS", 17124529105)
-local Button = Tab:CreateButton({ Name = "Fps AntiLag 🚀", Callback = function() 
+local Button = Tab:CreateButton({ Name = "Fps AntiLag 🚀NÃO USAR", Callback = function() 
 	print("Modo AntiLag ativado!")
 end })
 local Button = Tab:CreateButton({ Name = "Resetar Configurações 🔄", Callback = function() 
 	print("Configurações resetadas!")
 end })
-local Tab = Window:CreateTab("Farm peça de arma 🔫", 4483362458)
+local Tab = Window:CreateTab("Farm peça de arma 🔫NÃO USAR", 4483362458)
 
 Tab:CreateSection("Auto farm peça")
 
