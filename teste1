@@ -11,10 +11,10 @@ if not whitelist[player.UserId] then
 end
 
 local Window = Rayfield:CreateWindow({
-	Name = "                            AQUI E MINIBR Menu V1 💎",
+	Name = "Mike Gyro panelMenu V1 💎",
 	Icon = 0,
-	LoadingTitle = "AQUI E MINIBR 🔥",
-	LoadingSubtitle = "By Equip Of AQUI E MINIBR Store 🛒",
+	LoadingTitle = "Mike Gyro panel🔥",
+	LoadingSubtitle = "By Equip Of Mike Gyro panelStore 🛒",
 	Theme = "DarkBlue",
 	DisableRayfieldPrompts = false,
 	DisableBuildWarnings = false,
@@ -33,12 +33,12 @@ local Window = Rayfield:CreateWindow({
 
 local Tab = Window:CreateTab("Infos", 9405926389)
 Rayfield:Notify({
-	Title = "AQUI E MINIBR Injected 💸",
-	Content = "Obrigado por Adquirir nosso menu!",
+	Title = "Mike Gyro panelInjected 💸",
+	Content = "Obrigado por Comprar nosso menu!",
 	Duration = 36.0,
 	Image = 118582375849783,
 })
-local Paragraph = Tab:CreateParagraph({Title = "AQUI E MINIBR Menu ℹ️", Content = "+Novas Opções +Novas Farms +Menu Reeconstruido "})
+local Paragraph = Tab:CreateParagraph({Title = "Mike Gyro panelMenu ℹ️", Content = "+Novas Opções +Novas Farms +Menu Reeconstruido "})
 local Button = Tab:CreateButton({ Name = "Ver Atualizações 📜", Callback = function() 
 	print("Abrindo atualizações...")
 end })
@@ -526,7 +526,7 @@ local Button = Tab:CreateButton({ Name = "Fly ✈️", Callback = function()
 	TextLabel.Position = UDim2.new(0.469327301, 0, 0, 0)
 	TextLabel.Size = UDim2.new(0, 100, 0, 28)
 	TextLabel.Font = Enum.Font.SourceSans
-	TextLabel.Text = "AQUI E MINIBR store"
+	TextLabel.Text = "Mike Gyro panelstore"
 	TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
 	TextLabel.TextScaled = true
 	TextLabel.TextSize = 14.000
@@ -606,7 +606,7 @@ local Button = Tab:CreateButton({ Name = "Fly ✈️", Callback = function()
 	nowe = false
 
 	game:GetService("StarterGui"):SetCore("SendNotification", { 
-		Title = "AQUI E MINIBR store";
+		Title = "Mike Gyro panelstore";
 		Text = "By AQUI E MINIBR💸";
 		Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150"})
 	Duration = 5;
