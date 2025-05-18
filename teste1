@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local whitelist = {
 	[8243875657] = true,  -- shadowWolf23552
-	[7305435567] = true,  -- exemplo de ID 1
+	[7001751031] = true,  -- exemplo de ID 1
 	[4706362099] = true,  -- exemplo de ID 2
 	[5544575348] = true,  -- exemplo de ID 3
 	[1323] = true,  -- exemplo de ID 4
