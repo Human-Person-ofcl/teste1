@@ -3,7 +3,7 @@ local whitelist = {
 	[8243875657] = true,  -- shadowWolf23552
 	[7305435567] = true,  -- exemplo de ID 1
 	[4706362099] = true,  -- exemplo de ID 2
-	[8493796375] = true,  -- exemplo de ID 3
+	[5544575348] = true,  -- exemplo de ID 3
 	[1323] = true,  -- exemplo de ID 4
 }
 
