@@ -1260,6 +1260,9 @@ local Butkton = otoTab:CreateButton({
 		ToggleButton.Font = Enum.Font.SourceSansBold
 		ToggleButton.TextSize = 20
 		ToggleButton.Text = "Ativar Farm"
+               ToggleButton.Visible = False
+
+
 
 		local farming = false  -- Variável para controlar o farm
 
