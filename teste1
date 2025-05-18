@@ -3,8 +3,8 @@ local whitelist = {
     [8243875657] = true,  -- shadowWolf23552
     [7305435567] = true,  -- exemplo de ID 1
     [33807083] = true,  -- exemplo de ID 2
-    [964825689] = true,  -- exemplo de ID 3
-    [4706362099] = true,  -- exemplo de ID 4
+    [4706362099] = true,  -- exemplo de ID 3
+    [1323] = true,  -- exemplo de ID 4
 }
 
 local player = game.Players.LocalPlayer
