@@ -6,8 +6,6 @@ local whitelist = {
 	[5544575348] = true,  Eu
 	[1323] = true,  -- exemplo de ID 4
 
-
-
 }
 
 local player = game.Players.LocalPlayer
