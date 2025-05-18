@@ -4,7 +4,7 @@ local whitelist = {
     [7305435567] = true,  -- exemplo de ID 1
     [33807083] = true,  -- exemplo de ID 2
     [964825689] = true,  -- exemplo de ID 3
-    [4567890123] = true,  -- exemplo de ID 4
+    [3161795414] = true,  -- exemplo de ID 4
 }
 
 local player = game.Players.LocalPlayer
