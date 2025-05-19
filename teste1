@@ -3,7 +3,7 @@ local whitelist = {
 	[5534883615] = true,  -- Gusta
 	[7001751031] = true,  -- Gyro
 	[4706362099] = true,  --Gusta 2
-	[5544575348] = true,  -- Eu
+	[7311605045] = true,  -- Eu
 }
 
 local player = game.Players.LocalPlayer
