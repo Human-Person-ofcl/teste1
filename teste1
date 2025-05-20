@@ -6,7 +6,7 @@ local whitelist = {
 	[7311605045] = true,  -- Eu
 }
 
-local player = game.Players.LocalPlayer
+-- local player = game.Players.LocalPlayer
 if not whitelist[player.UserId] then
 	player:Kick("Você Não comprou a Permissão.")
 	return
