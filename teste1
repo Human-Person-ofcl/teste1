@@ -1,872 +1,506 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Exunys/Anti-Kick/main/Anti-Kick.lua"))()
-local whitelist = {
-	[5534883615] = true,  -- Gusta
-	[5544575348] = true,  -- Gyro
-	[5544575348] = true,  --Gusta 2
-	[5661087309] = true,  -- Eu
-}
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local Teams = game:GetService("Teams")
+local TextChatService = game:GetService("TextChatService")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local player = game.Players.LocalPlayer
-if not whitelist[player.UserId] then
-	player:Kick("Você Não comprou a Permissão.")
-	return
+local function deletarNotifyGui()
+	for _, gui in ipairs(LocalPlayer.PlayerGui:GetChildren()) do
+		if gui:IsA("ScreenGui") and gui.Name:find("NotifyGui") then
+			gui:Destroy()
+		end
+	end
 end
 
-})
-local Paragraph = Tab:CreateParagraph({Title = "Mike Gyro panelMenu ℹ️", Content = "+Novas Opções +Novas Farms +Menu Reeconstruido "})
-local Button = Tab:CreateButton({ Name = "Ver Atualizações 📜", Callback = function() 
-	print("Abrindo atualizações...")
-end })
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "MenuGUI"
+screenGui.ResetOnSpawn = false
+screenGui.IgnoreGuiInset = true
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+screenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
+local frame = Instance.new("Frame")
+frame.Name = "MenuFrame"
+frame.Size = UDim2.new(0, 705,0, 460)
+frame.Position = UDim2.new(0.5, 0, 0.5, 0)
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
+frame.BorderSizePixel = 0
+frame.Parent = screenGui
 
-local Tab = Window:CreateTab("PVP", 15990136399)
-local Button = Tab:CreateButton({ Name = "Aimbot🎯[Recomendado!]", Callback = function() 
-	print("Aimbot ativado!")
-	--// Cache
+local stroke = Instance.new("UIStroke")
+stroke.Color = Color3.fromRGB(60, 60, 70)
+stroke.Thickness = 2
+stroke.Parent = frame
 
-	local select = select
-	local pcall, getgenv, next, Vector2, mathclamp, type, mousemoverel = select(1, pcall, getgenv, next, Vector2.new, math.clamp, type, mousemoverel or (Input and Input.MouseMove))
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 15)
+corner.Parent = frame
 
-	--// Preventing Multiple Processes
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, 0, 0, 60)
+title.BackgroundTransparency = 1
+title.Text = "MG Panel"
+title.Font = Enum.Font.Bodoni
+title.TextColor3 = Color3.fromRGB(220, 220, 220)
+title.TextSize = 32
+title.Parent = frame
 
-	pcall(function()
-		getgenv().Aimbot.Functions:Exit()
+-- Criar botões de categoria no topo
+local categories = {"Principais", "PVP", "Farm"}
+local categoryButtons = {}
+local categoryFrames = {}
+
+local function criarCategoria(name, index)
+	local btn = Instance.new("TextButton")
+	btn.Name = name .. "Button"
+	btn.Size = UDim2.new(0, 110, 0, 35)
+	btn.Position = UDim2.new(0, (index-1)*120 + 15, 0, 70)
+	btn.BackgroundColor3 = Color3.fromRGB(55, 90, 140)
+	btn.TextColor3 = Color3.fromRGB(230, 230, 230)
+	btn.Font = Enum.Font.Bodoni
+	btn.TextSize = 18
+	btn.Text = name
+	btn.BorderSizePixel = 0
+	btn.AutoButtonColor = false
+	btn.Parent = frame
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 10)
+	corner.Parent = btn
+
+	local frameCat = Instance.new("Frame")
+	frameCat.Name = name .. "Frame"
+	frameCat.Size = UDim2.new(1, -30, 1, -120)
+	frameCat.Position = UDim2.new(0, 15, 0, 110)
+	frameCat.BackgroundTransparency = 1
+	frameCat.Parent = frame
+
+	return btn, frameCat
+end
+
+for i, cat in ipairs(categories) do
+	local btn, frameCat = criarCategoria(cat, i)
+	categoryButtons[cat] = btn
+	categoryFrames[cat] = frameCat
+end
+
+-- Função pra ativar só uma categoria de cada vez
+local function mostrarCategoria(catAtiva)
+	for cat, frameCat in pairs(categoryFrames) do
+		if cat == catAtiva then
+			frameCat.Visible = true
+			categoryButtons[cat].BackgroundColor3 = Color3.fromRGB(230, 70, 70)
+		else
+			frameCat.Visible = false
+			categoryButtons[cat].BackgroundColor3 = Color3.fromRGB(55, 90, 140)
+		end
+	end
+end
+
+-- Começa mostrando Principais
+mostrarCategoria("Principais")
+
+-- Função para criar botões toggle dentro das categorias
+local function createToggleButton(name, text, parentFrame, positionY)
+	local button = Instance.new("TextButton")
+	button.Name = name
+	button.Size = UDim2.new(0.85, 0, 0, 50)
+	button.Position = UDim2.new(0.075, 0, 0, positionY)
+	button.BackgroundColor3 = Color3.fromRGB(55, 90, 140)
+	button.TextColor3 = Color3.fromRGB(230, 230, 230)
+	button.Font = Enum.Font.Bodoni
+	button.TextSize = 20
+	button.Text = text
+	button.BorderSizePixel = 0
+	button.AutoButtonColor = false
+	button.Parent = parentFrame
+
+	local corner = Instance.new("UICorner")
+	corner.CornerRadius = UDim.new(0, 12)
+	corner.Parent = button
+
+	local active = false
+
+	button.MouseEnter:Connect(function()
+		if not active then
+			button.BackgroundColor3 = Color3.fromRGB(80, 120, 180)
+		end
 	end)
 
-	--// Environment
+	button.MouseLeave:Connect(function()
+		if not active then
+			button.BackgroundColor3 = Color3.fromRGB(55, 90, 140)
+		end
+	end)
 
-	getgenv().Aimbot = {}
-	local Environment = getgenv().Aimbot
-
-	--// Services
-
-	local RunService = game:GetService("RunService")
-	local UserInputService = game:GetService("UserInputService")
-	local TweenService = game:GetService("TweenService")
-	local Players = game:GetService("Players")
-	local Camera = workspace.CurrentCamera
-	local LocalPlayer = Players.LocalPlayer
-
-	--// Variables
-
-	local RequiredDistance, Typing, Running, Animation, ServiceConnections = 2000, false, false, nil, {}
-
-	--// Script Settings
-
-	Environment.Settings = {
-		Enabled = true,
-		TeamCheck = false,
-		AliveCheck = true,
-		WallCheck = false, -- Laggy
-		Sensitivity = 0, -- Animation length (in seconds) before fully locking onto target
-		ThirdPerson = false, -- Uses mousemoverel instead of CFrame to support locking in third person (could be choppy)
-		ThirdPersonSensitivity = 3, -- Boundary: 0.1 - 5
-		TriggerKey = "MouseButton2",
-		Toggle = false,
-		LockPart = "Head" -- Body part to lock on
-	}
-
-	Environment.FOVSettings = {
-		Enabled = true,
-		Visible = true,
-		Amount = 90,
-		Color = Color3.fromRGB(0, 0, 0),
-		LockedColor = Color3.fromRGB(255, 70, 70),
-		Transparency = 0.5,
-		Sides = 60,
-		Thickness = 1,
-		Filled = false
-	}
-
-	Environment.FOVCircle = Drawing.new("Circle")
-
-	--// Functions
-
-	local function CancelLock()
-		Environment.Locked = nil
-		if Animation then Animation:Cancel() end
-		Environment.FOVCircle.Color = Environment.FOVSettings.Color
-	end
-
-	local function GetClosestPlayer()
-		if not Environment.Locked then
-			RequiredDistance = (Environment.FOVSettings.Enabled and Environment.FOVSettings.Amount or 2000)
-
-			for _, v in next, Players:GetPlayers() do
-				if v ~= LocalPlayer then
-					if v.Character and v.Character:FindFirstChild(Environment.Settings.LockPart) and v.Character:FindFirstChildOfClass("Humanoid") then
-						if Environment.Settings.TeamCheck and v.Team == LocalPlayer.Team then continue end
-						if Environment.Settings.AliveCheck and v.Character:FindFirstChildOfClass("Humanoid").Health <= 0 then continue end
-						if Environment.Settings.WallCheck and #(Camera:GetPartsObscuringTarget({v.Character[Environment.Settings.LockPart].Position}, v.Character:GetDescendants())) > 0 then continue end
-
-						local Vector, OnScreen = Camera:WorldToViewportPoint(v.Character[Environment.Settings.LockPart].Position)
-						local Distance = (Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2(Vector.X, Vector.Y)).Magnitude
-
-						if Distance < RequiredDistance and OnScreen then
-							RequiredDistance = Distance
-							Environment.Locked = v
-						end
-					end
-				end
-			end
-		elseif (Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y) - Vector2(Camera:WorldToViewportPoint(Environment.Locked.Character[Environment.Settings.LockPart].Position).X, Camera:WorldToViewportPoint(Environment.Locked.Character[Environment.Settings.LockPart].Position).Y)).Magnitude > RequiredDistance then
-			CancelLock()
+	local function setActive(state)
+		active = state
+		if active then
+			button.BackgroundColor3 = Color3.fromRGB(230, 70, 70)
+			button.Text = text .. " (Ativado)"
+		else
+			button.BackgroundColor3 = Color3.fromRGB(44, 44, 44)
+			button.Text = text
 		end
 	end
 
-	--// Typing Check
+	return button, setActive, function() return active end
+end
 
-	ServiceConnections.TypingStartedConnection = UserInputService.TextBoxFocused:Connect(function()
-		Typing = true
-	end)
+-- Criar botões nas categorias
+local btnAntiStaff, setAntiStaffActive, isAntiStaffActive = createToggleButton("AntiStaff", "Anti Staff", categoryFrames["Principais"], 20)
+local btnESP, setESPActive, isESPActive = createToggleButton("ESP", "ESP", categoryFrames["Principais"], 290) -- Botão ESP na Principais
 
-	ServiceConnections.TypingEndedConnection = UserInputService.TextBoxFocusReleased:Connect(function()
-		Typing = false
-	end)
+local btnAntiCL, setAntiCLActive, isAntiCLActive = createToggleButton("AntiCL", "Anti CL", categoryFrames["PVP"], 20)
+local btnPuxarItens, setPuxarItensActive, isPuxarItensActive = createToggleButton("PuxarItens", "Puxar Itens", categoryFrames["PVP"], 90)
+local btnAutoRevista, setAutoRevistaActive, isAutoRevistaActive = createToggleButton("AutoRevista", "Auto Revista", categoryFrames["PVP"], 160)
 
-	--// Main
+-- Botão sair no final do frame principal (fora das categorias)
+local btnSair = Instance.new("TextButton")
+btnSair.Name = "Sair"
+btnSair.Size = UDim2.new(0.078, 0,0, 50)
+btnSair.Position = UDim2.new(0.907, 0,0.174, -70)
+btnSair.BackgroundColor3 = Color3.fromRGB(100, 30, 30)
+btnSair.TextColor3 = Color3.fromRGB(240, 240, 240)
+btnSair.Font = Enum.Font.GothamBold
+btnSair.TextSize = 22
+btnSair.Text = "Sair"
+btnSair.BorderSizePixel = 0
+btnSair.AutoButtonColor = false
+btnSair.Parent = frame
 
-	local function Load()
-		ServiceConnections.RenderSteppedConnection = RunService.RenderStepped:Connect(function()
-			if Environment.FOVSettings.Enabled and Environment.Settings.Enabled then
-				Environment.FOVCircle.Radius = Environment.FOVSettings.Amount
-				Environment.FOVCircle.Thickness = Environment.FOVSettings.Thickness
-				Environment.FOVCircle.Filled = Environment.FOVSettings.Filled
-				Environment.FOVCircle.NumSides = Environment.FOVSettings.Sides
-				Environment.FOVCircle.Color = Environment.FOVSettings.Color
-				Environment.FOVCircle.Transparency = Environment.FOVSettings.Transparency
-				Environment.FOVCircle.Visible = Environment.FOVSettings.Visible
-				Environment.FOVCircle.Position = Vector2(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
-			else
-				Environment.FOVCircle.Visible = false
+local cornerSair = Instance.new("UICorner")
+cornerSair.CornerRadius = UDim.new(0, 12)
+cornerSair.Parent = btnSair
+
+btnSair.MouseEnter:Connect(function()
+	btnSair.BackgroundColor3 = Color3.fromRGB(140, 40, 40)
+end)
+btnSair.MouseLeave:Connect(function()
+	btnSair.BackgroundColor3 = Color3.fromRGB(100, 30, 30)
+end)
+
+btnSair.MouseButton1Click:Connect(function()
+	screenGui:Destroy()
+end)
+
+-- Funções e conexões dos botões toggle
+-- Anti Staff
+local antiStaffConns = {}
+btnAntiStaff.MouseButton1Click:Connect(function()
+	if not isAntiStaffActive() then
+		setAntiStaffActive(true)
+
+		local function verificarStaff(player)
+			if player.Team and player.Team.Name == "STAFF" then
+				LocalPlayer:Kick("Staff Detectaduh.")
 			end
+		end
 
-			if Running and Environment.Settings.Enabled then
-				GetClosestPlayer()
-
-				if Environment.Locked then
-					if Environment.Settings.ThirdPerson then
-						Environment.Settings.ThirdPersonSensitivity = mathclamp(Environment.Settings.ThirdPersonSensitivity, 0.1, 5)
-
-						local Vector = Camera:WorldToViewportPoint(Environment.Locked.Character[Environment.Settings.LockPart].Position)
-						mousemoverel((Vector.X - UserInputService:GetMouseLocation().X) * Environment.Settings.ThirdPersonSensitivity, (Vector.Y - UserInputService:GetMouseLocation().Y) * Environment.Settings.ThirdPersonSensitivity)
-					else
-						if Environment.Settings.Sensitivity > 0 then
-							Animation = TweenService:Create(Camera, TweenInfo.new(Environment.Settings.Sensitivity, Enum.EasingStyle.Sine, Enum.EasingDirection.Out), {CFrame = CFrame.new(Camera.CFrame.Position, Environment.Locked.Character[Environment.Settings.LockPart].Position)})
-							Animation:Play()
-						else
-							Camera.CFrame = CFrame.new(Camera.CFrame.Position, Environment.Locked.Character[Environment.Settings.LockPart].Position)
-						end
-					end
-
-					Environment.FOVCircle.Color = Environment.FOVSettings.LockedColor
-
-				end
+		for _, player in ipairs(Players:GetPlayers()) do
+			if player ~= LocalPlayer then
+				verificarStaff(player)
 			end
+		end
+
+		antiStaffConns[#antiStaffConns+1] = Players.PlayerAdded:Connect(function(player)
+			player:GetPropertyChangedSignal("Team"):Connect(function()
+				verificarStaff(player)
+			end)
+			verificarStaff(player)
 		end)
 
-		ServiceConnections.InputBeganConnection = UserInputService.InputBegan:Connect(function(Input)
-			if not Typing then
-				pcall(function()
-					if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerKey] then
-						if Environment.Settings.Toggle then
-							Running = not Running
+	else
+		setAntiStaffActive(false)
+		for _, conn in ipairs(antiStaffConns) do
+			conn:Disconnect()
+		end
+		antiStaffConns = {}
+	end
+end)
 
-							if not Running then
-								CancelLock()
-							end
-						else
-							Running = true
-						end
+-- Anti CL
+local antiCLConns = {}
+btnAntiCL.MouseButton1Click:Connect(function()
+	if not isAntiCLActive() then
+		setAntiCLActive(true)
+
+		local function monitorarVida()
+			local humanoid = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+			if humanoid then
+				local conn
+				conn = humanoid:GetPropertyChangedSignal("Health"):Connect(function()
+					if humanoid.Health <= 75 then
+						LocalPlayer:Kick("Anti CL ativado.")
 					end
 				end)
+				table.insert(antiCLConns, conn)
+			end
+		end
 
-				pcall(function()
-					if Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
-						if Environment.Settings.Toggle then
-							Running = not Running
+		if LocalPlayer.Character then monitorarVida() end
+		antiCLConns[#antiCLConns+1] = LocalPlayer.CharacterAdded:Connect(function()
+			task.wait(1)
+			monitorarVida()
+		end)
+	else
+		setAntiCLActive(false)
+		for _, conn in ipairs(antiCLConns) do
+			conn:Disconnect()
+		end
+		antiCLConns = {}
+	end
+end)
 
-							if not Running then
-								CancelLock()
+-- Auto Revista
+local autoRevistaConns = {}
+local autoRevistado = {}
+btnAutoRevista.MouseButton1Click:Connect(function()
+	if not isAutoRevistaActive() then
+		setAutoRevistaActive(true)
+
+		local function sendRevistarMessage()
+			local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
+			channel:SendAsync("/revistar morto")
+		end
+
+		local function monitorarProximidade()
+			local RunConn
+			RunConn = RunService.Heartbeat:Connect(function()
+				for _, player in ipairs(Players:GetPlayers()) do
+					if player ~= LocalPlayer and player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character:FindFirstChildOfClass("Humanoid") then
+						local hrp = player.Character.HumanoidRootPart
+						local humanoid = player.Character:FindFirstChildOfClass("Humanoid")
+
+						if humanoid.Health <= 0 and not autoRevistado[player] then
+							local dist = (LocalPlayer.Character.HumanoidRootPart.Position - hrp.Position).Magnitude
+							if dist <= 10 then
+								sendRevistarMessage()
+								autoRevistado[player] = true
 							end
-						else
-							Running = true
 						end
-					end
-				end)
-			end
-		end)
-
-		ServiceConnections.InputEndedConnection = UserInputService.InputEnded:Connect(function(Input)
-			if not Typing then
-				if not Environment.Settings.Toggle then
-					pcall(function()
-						if Input.KeyCode == Enum.KeyCode[Environment.Settings.TriggerKey] then
-							Running = false; CancelLock()
-						end
-					end)
-
-					pcall(function()
-						if Input.UserInputType == Enum.UserInputType[Environment.Settings.TriggerKey] then
-							Running = false; CancelLock()
-						end
-					end)
-				end
-			end
-		end)
-	end
-
-	--// Functions
-
-	Environment.Functions = {}
-
-	function Environment.Functions:Exit()
-		for _, v in next, ServiceConnections do
-			v:Disconnect()
-		end
-
-		if Environment.FOVCircle.Remove then Environment.FOVCircle:Remove() end
-
-		getgenv().Aimbot.Functions = nil
-		getgenv().Aimbot = nil
-
-		Load = nil; GetClosestPlayer = nil; CancelLock = nil
-	end
-
-	function Environment.Functions:Restart()
-		for _, v in next, ServiceConnections do
-			v:Disconnect()
-		end
-
-		Load()
-	end
-
-	function Environment.Functions:ResetSettings()
-		Environment.Settings = {
-			Enabled = true,
-			TeamCheck = false,
-			AliveCheck = true,
-			WallCheck = false,
-			Sensitivity = 0, -- Animation length (in seconds) before fully locking onto target
-			ThirdPerson = false, -- Uses mousemoverel instead of CFrame to support locking in third person (could be choppy)
-			ThirdPersonSensitivity = 3, -- Boundary: 0.1 - 5
-			TriggerKey = "MouseButton2",
-			Toggle = false,
-			LockPart = "black" -- Body part to lock on
-		}
-
-		Environment.FOVSettings = {
-			Enabled = true,
-			Visible = true,
-			Amount = 90,
-			Color = Color3.fromRGB(0, 0, 0), --Preto
-			LockedColor = Color3.fromRGB(255, 70, 70),
-			Transparency = 0.5,
-			Sides = 60,
-			Thickness = 1,
-			Filled = false
-		}
-	end
-
-	--// Load
-
-	Load()
-end })
-local Button = Tab:CreateButton({ Name = "ESP 👀[Recomendado]", Callback = function() 
-	print("ESP ativado!")
-	loadstring(game:HttpGet(('https://raw.githubusercontent.com/cool83birdcarfly02six/UNIVERSALESPLTX/main/README.md'),true))()
-end })
-local Button = Tab:CreateButton({ Name = "HitBox 📦", Callback = function() 
-	print("HitBox expandido!")
-	-- Defina a parte que será a hitbox (pode ser qualquer parte do personagem ou um objeto específico)
-	local hitbox = workspace:WaitForChild("Hitbox")  -- Supondo que você tenha uma parte chamada "Hitbox"
-
-	-- Função para criar o efeito RGB
-	local function setRGBColor(part)
-		local time = tick()  -- Captura o tempo atual para efeitos baseados em tempo
-		local r = math.abs(math.sin(time))  -- Cria uma cor vermelha animada
-		local g = math.abs(math.sin(time + math.pi/3))  -- Cria uma cor verde animada
-		local b = math.abs(math.sin(time + math.pi/2))  -- Cria uma cor azul animada
-		part.Color = Color3.fromRGB(r * 255, g * 255, b * 255)  -- Converte para valores RGB
-	end
-
-	-- Função para expandir a hitbox
-	local function expandHitbox()
-		local size = 7  -- Tamanho inicial da hitbox
-		while true do
-			-- Expande a hitbox
-			hitbox.Size = hitbox.Size + Vector3.new(0.1, 0.1, 0.1)
-
-			-- Atualiza a cor com efeito RGB
-			setRGBColor(hitbox)
-
-			wait(0.1)  -- Aguarda um pequeno intervalo para o próximo aumento e troca de cor
-		end
-	end
-
-	-- Inicia a expansão da hitbox
-	expandHitbox()
-
-end })
-local Button = Tab:CreateButton({ Name = "Wallbang 🔫", Callback = function() 
-	print("Wallbang ativado!")
-end })
-local Section = Tab:CreateSection("Modo Invisível")
-
-Tab:CreateButton({
-	Name = "Ativar Invisibilidade",
-	Callback = function()
-		local player = game.Players.LocalPlayer
-		local character = player.Character
-		if character then
-			for _, v in pairs(character:GetDescendants()) do
-				if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
-					v.Transparency = 1
-					if v:FindFirstChild("Mesh") then
-						v.Mesh.TextureId = ""
-					end
-				end
-			end
-		end
-
-})
-
-Tab:CreateButton({
-	Name = "Desativar Invisibilidade",
-	Callback = function()
-		local player = game.Players.LocalPlayer
-		local character = player.Character
-		if character then
-			for _, v in pairs(character:GetDescendants()) do
-				if v:IsA("BasePart") and v.Name ~= "HumanoidRootPart" then
-					v.Transparency = 0
-				end
-			end
-		end
-
-})
-
-local Button = Tab:CreateButton({ Name = "Noclip 🚪Podeusar", Callback = function() 
-	print("Noclip ativado!")
-	local Noclip = nil
-	local Clip = nil
-
-	function noclip()
-		Clip = false
-		local function Nocl()
-			if Clip == false and game.Players.LocalPlayer.Character ~= nil then
-				for _,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
-					if v:IsA('BasePart') and v.CanCollide and v.Name ~= floatName then
-						v.CanCollide = false
-					end
-				end
-			end
-			wait(0.21) -- basic optimization
-		end
-		Noclip = game:GetService('RunService').Stepped:Connect(Nocl)
-	end
-
-	function clip()
-		if Noclip then Noclip:Disconnect() end
-		Clip = true
-	end
-
-	noclip() -- to toggle noclip() and clip()
-end })
-local noFallEnabled = false
-
-local Button = Tab:CreateButton({
-	Name = "No Fall 💖[PodeUsar]",
-	Callback = function()
-		noFallEnabled = not noFallEnabled -- Alterna entre ativado e desativado
-
-		if noFallEnabled then
-			print("✅ No Fall Ativado!")
-
-			local function deleteDamageEvents()
-				for _, obj in ipairs(game:GetDescendants()) do
-					if obj:IsA("RemoteEvent") or obj:IsA("BindableEvent") then
-						if string.lower(obj.Name):find("damage") or string.lower(obj.Name):find("dano") then
-							obj:Destroy()
-						end
-					end
-				end
-			end
-
-			deleteDamageEvents()
-
-			game.DescendantAdded:Connect(function(obj)
-				if noFallEnabled and (obj:IsA("RemoteEvent") or obj:IsA("BindableEvent")) then
-					if string.lower(obj.Name):find("damage") or string.lower(obj.Name):find("dano") then
-						obj:Destroy()
 					end
 				end
 			end)
-		else
-			print("❌ No Fall Desativado!")
+			table.insert(autoRevistaConns, RunConn)
 		end
-	end
-})
-game.DescendantAdded:Connect(function(obj)
-	if obj:IsA("RemoteEvent") or obj:IsA("BindableEvent") then
-		if string.lower(obj.Name):find("damage") or string.lower(obj.Name):find("dano") then
-			obj:Destroy()
+
+		if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+			monitorarProximidade()
 		end
+
+		autoRevistaConns[#autoRevistaConns+1] = LocalPlayer.CharacterAdded:Connect(function()
+			task.wait(1)
+			monitorarProximidade()
+		end)
+	else
+		setAutoRevistaActive(false)
+		for _, conn in ipairs(autoRevistaConns) do
+			conn:Disconnect()
+		end
+		autoRevistaConns = {}
+		autoRevistado = {}
 	end
 end)
-local rev = Window:CreateTab("Auto-Roubar 🏴‍☠️[PodeUsar]")
-local Section = rev:CreateSection("NECESSARIO")
-local Button = rev:CreateButton({
-	Name = "puxa itens",
-	Callback = function()
-		-- Função para deletar todas as NotifyGui
-		local function deletarNotifyGui()
-			local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-			for _, gui in ipairs(playerGui:GetChildren()) do
-				if gui.Name == "NotifyGui" and gui:IsA("ScreenGui") then
-					gui:Destroy() -- Deleta a NotifyGui
-				end
-			end
-		end
 
-		-- Lista de itens para pegar
+-- Puxar Itens
+local puxarItensActive = false
+local puxarItensThread = nil
+
+btnPuxarItens.MouseButton1Click:Connect(function()
+	if not puxarItensActive then
+		puxarItensActive = true
+		setPuxarItensActive(true)
+
 		local itens = {"AK47", "Uzi", "Parafal", "Faca", "IA2", "G3", "IPhone 14", "Agua", "Hamburguer", "Hi Power", "Natalina", "Tratamento", "Escudo", "Peça de Arma", "AR-15", "Lockpick","Pizza","Gasolina","Dinamite"}
-
-		-- Argumentos para a requisição
 		local args = {
 			[1] = "mudaInv",
 			[2] = "2",
 			[4] = "1"
 		}
 
-		-- Loop principal
-		while true do
-			-- Deletar todas as NotifyGui antes de pegar os itens
-			deletarNotifyGui()
-
-			-- Pegar itens
-			for i, item in ipairs(itens) do
-				if i <= 16 then  -- Só tenta alocar até 16 slots
-					args[3] = item  -- Atualiza o item para o valor da vez
-					args[2] = tostring(i)  -- Atribui o slot dinamicamente (1, 2, 3, ..., 16)
-
-					-- Usar task.spawn() para execução sem delay
-					task.spawn(function()
-						-- Envia a requisição para o servidor
-						game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("InvRemotes"):WaitForChild("InvRequest"):InvokeServer(unpack(args))
-					end)
-				end
-			end
-
-			wait(0)  -- Espera um frame para evitar lag
-		end
-	end,
-})
-local Section = rev:CreateSection("PC")
-local ww = rev:CreateToggle({
-	Name = "mandar revistar (TECLA E)",
-	CurrentValue = false,
-	Flag = "rvst",
-	Callback = function(Value)
-		getgenv().Enabled = Value
-	end,
-})
-local Section = rev:CreateSection("MOBILE")
-local mob = rev:CreateButton({
-	Name = "mandar revistar UI",
-	Callback = function()
-		local TextChatService = game:GetService("TextChatService")
-
-		-- Função para enviar a mensagem /revistar morto
-		local function sendRevistarMessage()
-			local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
-			channel:SendAsync("/revistar morto")
-		end
-
-		-- Cria a interface
-		local ScreenGui = Instance.new("ScreenGui")
-		local Frame = Instance.new("Frame")
-		local CloseButton = Instance.new("TextButton")
-		local RevistarButton = Instance.new("TextButton")
-		local Title = Instance.new("TextLabel")
-
-		ScreenGui.Name = "Revistar mobaile"
-		ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-
-		-- Estilo do Frame
-		Frame.Size = UDim2.new(0, 300, 0, 150)
-		Frame.Position = UDim2.new(0.5, -150, 0.5, -75)
-		Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		Frame.BorderSizePixel = 0
-		Frame.BackgroundTransparency = 0.1
-		Frame.Active = true
-		Frame.Draggable = true
-
-		-- Título
-		Title.Size = UDim2.new(1, 0, 0, 30)
-		Title.Position = UDim2.new(0, 0, 0, 0)
-		Title.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-		Title.Text = "AQUI E MINIBR"
-		Title.TextColor3 = Color3.fromRGB(255, 255, 255)
-		Title.Font = Enum.Font.SourceSansBold
-		Title.TextSize = 18
-
-		-- Botão Fechar
-		CloseButton.Size = UDim2.new(0, 30, 0, 30)
-		CloseButton.Position = UDim2.new(1, -30, 0, 0)
-		CloseButton.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
-		CloseButton.Text = "X"
-		CloseButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-		CloseButton.Font = Enum.Font.SourceSansBold
-		CloseButton.TextSize = 18
-		CloseButton.MouseButton1Click:Connect(function()
-			ScreenGui:Destroy()
-		end)
-
-
-		-- Botão Revistar
-		RevistarButton.Size = UDim2.new(0.8, 0, 0.4, 0)
-		RevistarButton.Position = UDim2.new(0.1, 0, 0.5, -30)
-		RevistarButton.BackgroundColor3 = Color3.fromRGB(50, 150, 250)
-		RevistarButton.Text = "manda /revistar morto"
-		RevistarButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-		RevistarButton.Font = Enum.Font.SourceSansBold
-		RevistarButton.TextSize = 20
-		RevistarButton.AutoButtonColor = true
-		RevistarButton.MouseButton1Click:Connect(function()
-			sendRevistarMessage()
-		end)
-
-		-- Adiciona os elementos ao frame
-		Frame.Parent = ScreenGui
-		Title.Parent = Frame
-		CloseButton.Parent = Frame
-		RevistarButton.Parent = Frame
-	end,
-})
-local otoTab = Window:CreateTab("anti staff 👾Pode Usar")
-local Toggle = otoTab:CreateToggle({
-	Name = "anti staff V2",
-	CurrentValue = false,
-	Flag = "ToggleKickCheck",
-	Callback = function(Value)
-		if Value then
-			getgenv().KickCheck = true
-			local Players = game:GetService("Players")
-			local LocalPlayer = Players.LocalPlayer
-
-			-- Lista de jogadores proibidos
-			local blacklist = {
-				"jake56839ad", "CleitinDoGrau_Eb", "21peteca", "Lucalarte", "SPTmatheus123",
-				"GuilhermeDRTgg", "Briessxz", "hardstyless", "Mundaka", "Isabelaaaaafofs",
-				"HANRLLEY25", "kaleb_iaee", "brunizoraa", "rip_propleyfran", "pepezicador",
-				"Jjhgul", "Dariosantos21048", "JEKER_2009", "tttonas", "MZPlug14k",
-				"Dudubeterotv5", "Sargento_admOficial", "Cassiopia84un", "Hakplays", "Cleo_ptr"
-			}
-
-			-- Criar uma tabela para verificação rápida
-			local targetLookup = {}
-			for _, name in ipairs(blacklist) do
-				targetLookup[name] = true
-			end
-
-			-- Função para verificar e expulsar jogadores
-			local function checkPlayer(player)
-				if not player or not player:IsA("Player") then return end
-
-				task.wait(1) -- Pequeno atraso para garantir que o jogador foi carregado completamente
-
-				if targetLookup[player.Name] then
-					pcall(function()
-						player:Kick("Você foi expulso do jogo.")
-					end)
-					print("Expulsando jogador proibido: " .. player.Name)
-				end
-			end
-
-			-- Conectar ao evento de entrada de jogadores
-			Players.PlayerAdded:Connect(checkPlayer)
-
-			-- Anti-Staff: Detecta jogadores com cargos específicos (Exemplo: "Moderator", "Admin")
-			local function antiStaff(player)
-				if not player or not player:IsA("Player") then return end
-
-				local success, result = pcall(function()
-					return player:GetRankInGroup(1234567) -- Substitua 1234567 pelo ID do grupo desejado
-				end)
-
-				if success and result >= 200 then -- Ajuste o rank mínimo conforme necessário
-					pcall(function()
-						player:Kick("Acesso negado para membros da staff.")
-					end)
-					print("Expulsando staff: " .. player.Name)
-				end
-			end
-
-			Players.PlayerAdded:Connect(antiStaff)
-
-			-- Função para verificar e kickar caso necessário
-			local function checkForTargetPlayers()
-				if not getgenv().KickCheck then return end
-
-				for _, player in pairs(Players:GetPlayers()) do
-					if targetLookup[player.Name] then
-						warn("Usuário indesejado detectado:", player.Name)
-						LocalPlayer:Kick("Um staff foi detectado no servidor.")
-						break
+		puxarItensThread = task.spawn(function()
+			while puxarItensActive do
+				deletarNotifyGui()
+				for i, item in ipairs(itens) do
+					if i <= 16 then
+						args[3] = item
+						args[2] = tostring(i)
+						task.spawn(function()
+							local invRequest = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("InvRemotes"):WaitForChild("InvRequest")
+							invRequest:InvokeServer(unpack(args))
+						end)
 					end
 				end
+				task.wait(0)
 			end
+		end)
 
-			-- Verifica inicialmente
-			checkForTargetPlayers()
+	else
+		puxarItensActive = false
+		setPuxarItensActive(false)
+	end
+end)
+-- ESP
+local espFolder = Instance.new("Folder")
+espFolder.Name = "ESP"
+espFolder.Parent = screenGui
 
-			-- Verifica sempre que um novo jogador entrar
-			Players.PlayerAdded:Connect(function(player)
-				if getgenv().KickCheck and targetLookup[player.Name] then
-					warn("Usuário indesejado detectado:", player.Name)
-					LocalPlayer:Kick("Um staff foi detectado no servidor.")
-				end
-			end)
+local espBoxes = {}
 
-			print("Verificação ativada.")
+local function criarBoxEsp(character)
+	if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+	local box = Drawing and Drawing.new("Square") or nil
+	if not box then return end
+
+	box.Visible = true
+	box.Color = Color3.fromRGB(255, 0, 0)
+	box.Thickness = 2
+	box.Transparency = 1
+	box.Filled = false
+
+	local text = Drawing.new("Text")
+	text.Visible = true
+	text.Center = true
+	text.Color = Color3.fromRGB(255, 255, 255)
+	text.Size = 16
+	text.Text = ""
+
+	return {
+		box = box,
+		text = text,
+	}
+end
+
+local function atualizarESP()
+	for player, espData in pairs(espBoxes) do
+		if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+			local hrp = player.Character.HumanoidRootPart
+			local pos, onScreen = workspace.CurrentCamera:WorldToViewportPoint(hrp.Position)
+
+			if onScreen then
+				local sizeFactor = 150 / pos.Z
+				local boxSize = Vector2.new(sizeFactor, sizeFactor * 2)
+
+				espData.box.Position = Vector2.new(pos.X - boxSize.X / 2, pos.Y - boxSize.Y / 2)
+				espData.box.Size = boxSize
+				espData.box.Visible = true
+
+				espData.text.Position = Vector2.new(pos.X, pos.Y - boxSize.Y / 2 - 18)
+				espData.text.Text = player.Team and player.Team.Name or ""
+				espData.text.Visible = true
+			else
+				espData.box.Visible = false
+				espData.text.Visible = false
+			end
 		else
-			getgenv().KickCheck = false
+			if espData.box then espData.box.Visible = false end
+			if espData.text then espData.text.Visible = false end
 		end
 	end
-})
+end
 
--- Loop para checar a cada 5 segundos, apenas se ativado
-task.spawn(function()
-	while true do
-		if getgenv().KickCheck then
-			checkForTargetPlayers()
+local function ativarESP()
+	for _, player in pairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer then
+			if not espBoxes[player] then
+				local espData = criarBoxEsp(player.Character)
+				if espData then
+					espBoxes[player] = espData
+				end
+			end
 		end
-		task.wait(5)
+	end
+
+	Players.PlayerAdded:Connect(function(player)
+		if player ~= LocalPlayer then
+			task.wait(1)
+			if not espBoxes[player] then
+				local espData = criarBoxEsp(player.Character)
+				if espData then
+					espBoxes[player] = espData
+				end
+			end
+		end
+	end)
+
+	Players.PlayerRemoving:Connect(function(player)
+		if espBoxes[player] then
+			if espBoxes[player].box then espBoxes[player].box.Visible = false; espBoxes[player].box:Remove() end
+			if espBoxes[player].text then espBoxes[player].text.Visible = false; espBoxes[player].text:Remove() end
+			espBoxes[player] = nil
+		end
+	end)
+
+	RunService.RenderStepped:Connect(atualizarESP)
+end
+
+local espAtivo = false
+btnESP.MouseButton1Click:Connect(function()
+	if not espAtivo then
+		espAtivo = true
+		setESPActive(true)
+		ativarESP()
+	else
+		espAtivo = false
+		setESPActive(false)
+		for player, espData in pairs(espBoxes) do
+			if espData.box then espData.box.Visible = false; espData.box:Remove() end
+			if espData.text then espData.text.Visible = false; espData.text:Remove() end
+		end
+		espBoxes = {}
 	end
 end)
 
-local Section = otoTab:CreateSection("AUTO CL CONFIG")
--- Verifica se getgenv está disponível
-if getgenv == nil then
-	error("getgenv não está definido neste ambiente.")
+-- Botões das categorias para trocar visibilidade
+for cat, btn in pairs(categoryButtons) do
+	btn.MouseButton1Click:Connect(function()
+		mostrarCategoria(cat)
+	end)
 end
 
--- Configuração inicial do getgenv
-getgenv().KickOnLowHealth = false -- Ativar/desativar o auto kick
-getgenv().HealthThreshold = 10    -- Vida mínima antes de ser expulso
+-- Botão Menu no canto direito da tela para abrir/fechar menu
+local btnMenuToggle = Instance.new("TextButton")
+btnMenuToggle.Name = "MenuToggleButton"
+btnMenuToggle.Size = UDim2.new(0, 100, 0, 40)
+btnMenuToggle.Position = UDim2.new(1, -110, 0.5, -20) -- canto direito centralizado verticalmente
+btnMenuToggle.AnchorPoint = Vector2.new(0, 0)
+btnMenuToggle.BackgroundColor3 = Color3.fromRGB(55, 90, 140)
+btnMenuToggle.TextColor3 = Color3.fromRGB(230, 230, 230)
+btnMenuToggle.Font = Enum.Font.Bodoni
+btnMenuToggle.TextSize = 20
+btnMenuToggle.Text = "Menu"
+btnMenuToggle.BorderSizePixel = 0
+btnMenuToggle.AutoButtonColor = false
+btnMenuToggle.Parent = screenGui
 
--- Função para monitorar a vida do jogador
-local function monitorHealth()
-	local player = game.Players.LocalPlayer
-	local character = player.Character
-	if character and character:FindFirstChild("Humanoid") then
-		local humanoid = character.Humanoid
-		humanoid.HealthChanged:Connect(function(health)
-			if health <= getgenv().HealthThreshold and getgenv().KickOnLowHealth then
-				player:Kick("Auto cl pq tua vida tava abaixo de " .. getgenv().HealthThreshold)
-			end
-		end)
+local cornerMenuToggle = Instance.new("UICorner")
+cornerMenuToggle.CornerRadius = UDim.new(0, 12)
+cornerMenuToggle.Parent = btnMenuToggle
+
+btnMenuToggle.MouseEnter:Connect(function()
+	if frame.Visible == false then
+		btnMenuToggle.BackgroundColor3 = Color3.fromRGB(80, 120, 180)
 	end
-end
-
-game.Players.LocalPlayer.CharacterAdded:Connect(function()
-	monitorHealth()
 end)
-
-if game.Players.LocalPlayer.Character then
-	monitorHealth()
-end
-
--- Criação do Toggle para ativar/desativar o auto kick
-local Toggle = otoTab:CreateToggle({
-	Name = "auto CL",
-	CurrentValue = getgenv().KickOnLowHealth,
-	Flag = "AutoKickToggle",
-	Callback = function(Value)
-		getgenv().KickOnLowHealth = Value
-	end,
-})
-
--- Criação do Slider para ajustar o limite de vida
-local Slider = otoTab:CreateSlider({
-	Name = "kick quando vida =",
-	Range = {0, 100},
-	Increment = 1,
-	Suffix = " HP",
-	CurrentValue = getgenv().HealthThreshold,
-	Flag = "HealthThresholdSlider",
-	Callback = function(Value)
-		getgenv().HealthThreshold = Value
-	end,
-})
-
-getgenv().Key = Enum.KeyCode.B
-getgenv().Enabled = getgenv().Enabled or false
-local UserInputService = game:GetService("UserInputService")
-
--- Configurações via getgenv
-getgenv().Key = getgenv().Key or Enum.KeyCode.R -- Tecla padrão: R
-getgenv().Enabled = getgenv().Enabled or false -- Estado inicial: desativado
-
--- Função para enviar a mensagem /revistar
-local function sendRevistarMessage()
-	local TextChatService = game:GetService("TextChatService")
-	local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
-	channel:SendAsync("/revistar morto")
-end
-
--- Listener para detectar teclas pressionadas
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	-- Verifica se o script está ativado e se a tecla correta foi pressionada
-	if getgenv().Enabled and input.KeyCode == getgenv().Key and not gameProcessed then
-		sendRevistarMessage()
+btnMenuToggle.MouseLeave:Connect(function()
+	if frame.Visible == false then
+		btnMenuToggle.BackgroundColor3 = Color3.fromRGB(55, 90, 140)
 	end
 end)
 
-local TeleportTab = Window:CreateTab("Teleports 🕳️")
-local function addTeleportButton(name, cframe)
-	TeleportTab:CreateButton({
-		Name = name,
-		Callback = function()
-			local player = game.Players.LocalPlayer
-			if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-				player.Character:MoveTo(cframe.Position + Vector3.new(0, 3, 0))
-			end
-		end,
-	})
-end
--- Adicionando os botões de teletransporte para locais fixos
-addTeleportButton("Teleport Praça", CFrame.new(-291.579559, 3.26299787, 342.192535))
-addTeleportButton("Teleport Gás", CFrame.new(-469.959015, 3.25349784, -54.3936005))
-addTeleportButton("Teleport HP", CFrame.new(-543.439941, 3.26299858, 645.16864))
-addTeleportButton("Teleport Tabacaria", CFrame.new(-83.1141129, 13.1430578, 74.7073364))
-addTeleportButton("Teleport Garagem", CFrame.new(-466.870148, 7.64567232, 350.242737))
-addTeleportButton("Teleport Concessionaria", CFrame.new(-91.3902893, 8.07136822, 520.355347))
-addTeleportButton("Teleport Gari", CFrame.new(-518.672852, 3.16749811, -1.16962147, 0, 0, -1, 0, 1, 0, 1, 0, 0))
-addTeleportButton("Teleport Imobiliaria", CFrame.new(-284.904785, 8.26088619, -72.2896194, 0, 0, -1, 0, 1, 0, 1, 0, 0))
-addTeleportButton("Teleport PM", CFrame.new(-980.181458, 2.27553082, 467.080536, 1, 0, 0, 0, 1, 0, 0, 0, 1))
-addTeleportButton("Teleport PRF", CFrame.new(6662.24512, 36.6637421, 5047.83838, 0.707134247, 0, 0.707079291, 0, 1, 0, -0.707079291, 0, 0.707134247))
-addTeleportButton("Teleport Mineração", CFrame.new(201.932144, 2.76136589, 145.50531, 0, 0, 1, 0, 1, -0, -1, 0, 0))
-addTeleportButton("Teleport Mecânica", CFrame.new(-180.608261, 3.29813337, -532.4151, 0.422592998, -0, -0.906319618, 0, 1, -0, 0.906319618, 0, 0.422592998))
-addTeleportButton("Teleport Fazenda", CFrame.new(817.243225, 3.26249814, -87.316864, 0, 0, 1, 0, 1, 0, -1, 0, 0))
-addTeleportButton("Teleport Prefeitura", CFrame.new(-284.388458, 15.1148872, 88.0397873, 0, 0, -1, 0, 1, 0, 1, 0, 0))
-addTeleportButton("Teleport Banco", CFrame.new(-27.2709007, 11.5685892, 418.200653, 1, 0, 0, 0, 1, 0, 0, 0, 1))
-addTeleportButton("Teleport Ilegal", CFrame.new(12037.2705, 27.5305443, 12794.0635, 0.965929627, -0, -0.258804798, 0, 1, -0, 0.258804798, 0, 0.965929627))
-addTeleportButton("Teleport predio 1", CFrame.new(-1595.23328, 204.074341, 555.895386, 0.939687431, -0.34203434, 1.81794167e-06, 1.81794167e-06, 1.02519989e-05, 1, -0.34203434, -0.93968749, 1.02519989e-05))
-addTeleportButton("Teleport Devs Mini City", CFrame.new(2555.44263, 303.167755, -1004.13763, -0.422592998, 0, 0.906319618, 0, 1, 0, -0.906319618, 0, -0.422592998))
-local Tab = Window:CreateTab("CONFIGS", 17124529105)
-local Button = Tab:CreateButton({ Name = "Fps AntiLag 🚀NÃO USAR", Callback = function() 
-	print("Modo AntiLag ativado!")
-end })
-local Button = Tab:CreateButton({ Name = "Resetar Configurações 🔄", Callback = function() 
-	print("Configurações resetadas!")
-end })
-local Tab = Window:CreateTab("Farm peça de arma 🔫NÃO USAR", 4483362458)
-
-Tab:CreateSection("Auto farm peça")
-
--- Botão para salvar posição
-local SavePositionButton = Tab:CreateButton({
-	Name = "Salvar farm Posição da fac",
-	Callback = function()
-		local player = game.Players.LocalPlayer
-		local character = player.Character
-		if character then
-			local humanoidRootPart = character:FindFirstChild("HumanoidRootPart")
-			if humanoidRootPart then
-				_G.SavedPosition = humanoidRootPart.Position
-			end
-		end
+btnMenuToggle.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+	if frame.Visible then
+		btnMenuToggle.BackgroundColor3 = Color3.fromRGB(230, 70, 70)
+	else
+		btnMenuToggle.BackgroundColor3 = Color3.fromRGB(55, 90, 140)
 	end
-})
+end)
 
--- Função para acionar os ProximityPrompts
-local function fireAllProximityPrompts()
-	local objetosMissao = workspace:FindFirstChild("MapaGeral")
-		and workspace.MapaGeral:FindFirstChild("FavelaV2")
-		and workspace.MapaGeral.FavelaV2:FindFirstChild("objetosMissao")
-
-	if objetosMissao then
-		for _, prompt in ipairs(objetosMissao:GetDescendants()) do
-			if prompt:IsA("ProximityPrompt") then
-				prompt.HoldDuration = 0
-				prompt:InputHoldBegin()
-				prompt:InputHoldEnd()
-			end
-		end
-	end
-end
-
--- Função para encontrar o prompt do jogador
-local function findPlayerProximityPrompt()
-	local playerName = game.Players.LocalPlayer.Name
-	local objetosMissao = workspace:FindFirstChild("MapaGeral")
-		and workspace.MapaGeral:FindFirstChild("FavelaV2")
-		and workspace.MapaGeral.FavelaV2:FindFirstChild("objetosMissao")
-
-	if objetosMissao then
-		for _, prompt in ipairs(objetosMissao:GetDescendants()) do
-			if prompt:IsA("ProximityPrompt") and prompt.Name == playerName then
-				return prompt
-			end
-		end
-	end
-	return nil
-end
-
--- Toggle para iniciar o farm
-local farmToggle = Tab:CreateToggle({
-	Name = "Ativar Farm",
-	CurrentValue = false,
-	Callback = function(Value)
-		while Value and _G.SavedPosition do
-			local player = game.Players.LocalPlayer
-			local character = player.Character
-			if not character or not character:FindFirstChild("HumanoidRootPart") then
-				break
-			end
-
-			fireAllProximityPrompts()
-			character.HumanoidRootPart.CFrame = CFrame.new(_G.SavedPosition)
-
-			task.wait(0.35)
-
-			game:GetService("ReplicatedStorage"):WaitForChild("RemoteNovos")
-				:WaitForChild("trabalhos"):FireServer("missaoPECAS")
-
-			local playerPrompt = findPlayerProximityPrompt()
-			if playerPrompt and playerPrompt.Parent then
-				character.HumanoidRootPart.CFrame = CFrame.new(playerPrompt.Parent.Position)
-			end
-
-			task.wait(0.2)
-		end
-	end
-})
-
--- Configuração de Auto CL (Auto Close)
-if getgenv == nil then
-	error("getgenv não está definido neste ambiente.")
-end
-
-getgenv().KickOnLowHealth = false
-getgenv().HealthThreshold = 10
-
-local function monitorHealth()
-	local player = game.Players.LocalPlayer
-	local character = player.Character
-	if character and character:FindFirstChild("Humanoid") then
-		local humanoid = character.Humanoid
-		humanoid.HealthChanged:Connect(function(health)
-			if health <= getgenv().HealthThreshold and getgenv().KickOnLowHealth then
-				player:Kick("Auto CL ativado: Vida abaixo de " .. getgenv().HealthThreshold)
-			end
-		end)
-	end
-end
-
-game.Players.LocalPlayer.CharacterAdded:Connect(monitorHealth)
-if game.Players.LocalPlayer.Character then
-	monitorHealth()
-end
+-- Começa com menu fechado
+frame.Visible = false
+btnMenuToggle.BackgroundColor3 = Color3.fromRGB(55, 90, 140)
